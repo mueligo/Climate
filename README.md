@@ -145,9 +145,9 @@ cd firmware && cp platformio.secrets.ini.example platformio.secrets.ini
 |---|---|
 | `WIFI_SSID` | Wi-Fi name |
 | `WIFI_PASSWORD` | Wi-Fi password |
-| `TELEMETRY_API_URL` | Telemetry endpoint |
+| `API_URL` | Telemetry endpoint |
 | `DEVICE_ID` | Stable device ID |
-| `DEVICE_API_KEY` | Token from dashboard/API |
+| `API_KEY` | Token from dashboard/API |
 
 ## API
 
