@@ -12,7 +12,7 @@
   <img alt="ESP32" src="https://img.shields.io/badge/firmware-ESP32-black?style=flat-square" />
   <img alt="Fastify" src="https://img.shields.io/badge/backend-Fastify%20%2B%20SQLite-black?style=flat-square" />
   <img alt="Vue" src="https://img.shields.io/badge/frontend-Vue%20%2B%20Vite-black?style=flat-square" />
-  <img alt="Passkeys" src="https://img.shields.io/badge/auth-passkeys-black?style=flat-square" />
+  <img alt="Auth" src="https://img.shields.io/badge/auth-password-black?style=flat-square" />
 </p>
 
 <p align="center">
@@ -48,7 +48,7 @@ npm run dev
 | API | http://localhost:3000 |
 | Health check | http://localhost:3000/health |
 
-First run: create owner password → (optional) add passkey → provision device token → flash firmware → monitor readings.
+First run: create owner password → provision device token → flash firmware → monitor readings.
 
 ## Features
 
@@ -58,7 +58,7 @@ First run: create owner password → (optional) add passkey → provision device
 | **Power modes** | Always-on and deep-sleep firmware |
 | **Offline safety** | LittleFS queue, CRC records, retry, replay-safe dedup |
 | **Storage** | SQLite WAL, online backup, CSV export |
-| **Auth** | Password login + WebAuthn/passkeys |
+| **Auth** | Owner password login + device Bearer API keys |
 | **Alerts** | Alarms, notifications, heartbeat diagnostics |
 | **OTA** | Firmware metadata + binary download endpoints |
 | **Dashboard** | Responsive charts, filters, auto dark/light theme |
@@ -75,7 +75,7 @@ flowchart LR
   end
 
   subgraph API[Fastify API]
-    Auth[Device token + owner passkeys]
+    Auth[Device token + owner password]
     DB[(SQLite WAL)]
     Alarms[Alarm engine]
     OTA[OTA endpoints]
@@ -132,8 +132,6 @@ cd webapp && cp .env.example .env
 | `PORT` | `3000` | API port |
 | `DATABASE_PATH` | `./apps/api/data/climate.sqlite` | SQLite database file |
 | `DASHBOARD_ORIGIN` | `http://localhost:5173` | Allowed dashboard origin |
-| `PASSKEYS_ENABLED` | `true` | Enable WebAuthn/passkeys |
-| `WEBPASSKEY_RP_ID` | `localhost` | Passkey relying-party ID |
 
 ### Firmware
 
@@ -145,8 +143,8 @@ cd firmware && cp platformio.secrets.ini.example platformio.secrets.ini
 |---|---|
 | `WIFI_SSID` | Wi-Fi name |
 | `WIFI_PASSWORD` | Wi-Fi password |
-| `API_URL` | Telemetry endpoint |
 | `DEVICE_ID` | Stable device ID |
+| `API_URL` | Telemetry endpoint |
 | `API_KEY` | Token from dashboard/API |
 
 ## API
@@ -155,7 +153,6 @@ cd firmware && cp platformio.secrets.ini.example platformio.secrets.ini
 |---|---|---|
 | `/health` | None | Health check |
 | `/api/v1/auth/*` | Session | Owner setup, login |
-| `/api/v1/passkeys/*` | Session/public | Passwordless auth |
 | `/api/v1/telemetry` | Device token | Ingest sensor data |
 | `/api/v1/readings` | Session | Query history |
 | `/api/v1/devices` | Session | Device registry |
