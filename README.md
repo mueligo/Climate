@@ -152,7 +152,7 @@ cd firmware && cp platformio.secrets.ini.example platformio.secrets.ini
 | Endpoint | Auth | Purpose |
 |---|---|---|
 | `/health` | None | Health check |
-| `/api/v1/auth/*` | Session | Owner setup, login |
+| `/api/v1/auth/*` | Session | Dashboard setup, login |
 | `/api/v1/telemetry` | Device API key or public mode | Ingest sensor data |
 | `/api/v1/readings` | Session | Query history |
 | `/api/v1/devices` | Session | Device registry |
@@ -201,34 +201,36 @@ pio run -e lolin32_dht22_alwayson -e lolin32_sht31_alwayson \
 
 | Check | Result |
 |---|---|
-| API tests | 16 pass, 0 fail |
+| API tests | 17 pass, 0 fail |
 | Browser QA | Pass |
 | Web build | Pass |
 | Firmware matrix | Pass |
 | Wokwi image | Generated |
 
-## Firmware
+## How Climate compares
 
-Climate ships universal ESP32 firmware (ESP-IDF, PlatformIO) that works with any compatible API backend. It is decoupled from the dashboard: set `API_URL` and `API_KEY` to report, or leave it unconfigured for local flash/QC.
+Climate is not trying to replace ESPHome, Tasmota, ThingsBoard, or Home Assistant. Those are broader ecosystems. Climate optimizes a narrower path: a clean ESP32 temperature/humidity firmware plus a small self-hosted API and dashboard.
 
-| Capability | Climate | ESPHome | Tasmota |
-|---|---|---|---|
-| Configuration | Single `platformio.secrets.ini` | Per-device YAML file | Web UI commands |
-| Build | Per-sensor-matrix (`dht22`/`sht31`, `alwayson`/`deepsleep`) | Per-device compilation | Shared binary |
-| Local queue | LittleFS, CRC records, replay-safe dedup | RAM queue | Flash queue |
-| Offline safety | Retry uploader, CRC, dedup | Limited retry | Rules + retain |
-| OTA updates | Climate API or standalone HTTPS | ESPHome/HA | Tasmota web/MQTT |
-| Auth model | `API_KEY` BEARER token per device | Native API key | None (MQTT) |
-| Flash usage | 75–78% | ~65% | ~90% |
-| For beginners | ⚠️ Needs API backend | ⚠️ YAML compile | ✅ Web UI install |
-| Standalone use | Needs API | HA preferred | ✅ Self-contained |
-| Flexibility | Medium (matrix) | High (YAML) | High (rules) |
-| Developer control | ✅ Full source, IDF-native | ⚠️ YAML abstraction | ⚠️ Rule engine only |
-| Community size | Growing (niche) | Large (HA ecosystem) | Large (established) |
-| Update frequency | Per firmware feature | Weekly patches | Monthly |
-| Recovery mode | Safe-mode (ESP-IDF OTA) | Safe-mode fallback | Safe-mode fallback |
+| Project | Role | Offline sample handling | Dashboard/history | OTA/update owner | Best fit |
+|---|---|---|---|---|---|
+| **Climate** | Focused ESP32 climate firmware + webapp | LittleFS queue, CRC records, retry, replay-safe dedup | Built-in Vue dashboard + SQLite WAL | Climate API / ESP-IDF OTA path | Small self-hosted climate monitors |
+| **ESPHome** | Firmware generator + device builder | Strong live native API, but not a general durable sample replay queue | Usually Home Assistant | ESPHome OTA + safe mode | YAML-driven smart-home devices |
+| **Tasmota** | General ESP firmware | MQTT reconnect/retain/rules, not every-sample replay | Per-device web UI; external dashboards | Web UI / MQTT / command OTA | Flashing commercial ESP devices |
+| **ThingsBoard CE** | Full IoT platform | Server-side rule queues after data arrives | Rich dashboards, widgets, rule engine | OTA package management; device must cooperate | Multi-device fleets and rules |
+| **Home Assistant** | Home automation platform | Recorder stores data after integration receives it | Lovelace dashboards, history, automations | Usually ESPHome/device-specific | Whole-home automation ecosystem |
 
-Climate is for small self-hosted deployments: homes, labs, greenhouses, fridges, sensor networks. Not for large-fleet telemetry or enterprise RBAC.
+What Climate can legitimately be best at: **simple, inspectable, local-first ESP32 climate monitoring**. What it should not claim without field data: global “best”, enterprise fleet scale, or stronger reliability than ESPHome/Tasmota across every device type.
+
+| Next adoption target | Why it matters |
+|---|---|
+| Signed OTA + rollback proof | Makes firmware updates safer than a simple binary download |
+| Explicit replay contract | Defines exactly when queued readings are deleted, retried, deduped, or dropped |
+| Queue observability | Show queue depth, oldest sample, retry count, and last ACK in dashboard |
+| Retention/downsampling policy | Keeps SQLite light over months of readings |
+| Home Assistant/MQTT export | Lets Climate stay focused while interoperating with larger ecosystems |
+| Hardware qualification log | Proves sensor accuracy, Wi-Fi recovery, power loss, OTA interruption, deep sleep current |
+
+Sources checked: ESPHome Native API/OTA/safe mode, Tasmota Commands/Upgrading/MQTT, ThingsBoard Architecture/Rule Engine/OTA, Home Assistant ESPHome integration/Auth/Recorder, SQLite WAL, and ESP-IDF OTA docs.
 
 | Limit | Impact |
 |---|---|
