@@ -12,7 +12,7 @@
   <img alt="ESP32" src="https://img.shields.io/badge/firmware-ESP32-black?style=flat-square" />
   <img alt="Fastify" src="https://img.shields.io/badge/backend-Fastify%20%2B%20SQLite-black?style=flat-square" />
   <img alt="Vue" src="https://img.shields.io/badge/frontend-Vue%20%2B%20Vite-black?style=flat-square" />
-  <img alt="Auth" src="https://img.shields.io/badge/auth-password-black?style=flat-square" />
+  <img alt="Auth" src="https://img.shields.io/badge/auth-api%20keys-black?style=flat-square" />
 </p>
 
 <p align="center">
@@ -58,7 +58,7 @@ First run: choose password or no-password mode → provision device API key if p
 | **Power modes** | Always-on and deep-sleep firmware |
 | **Offline safety** | LittleFS queue, CRC records, retry, replay-safe dedup |
 | **Storage** | SQLite WAL, online backup, CSV export |
-| **Auth** | Owner password login + device Bearer API keys |
+| **Auth** | API keys |
 | **Alerts** | Alarms, notifications, heartbeat diagnostics |
 | **OTA** | Firmware metadata + binary download endpoints |
 | **Dashboard** | Responsive charts, filters, auto dark/light theme |
