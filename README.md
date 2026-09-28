@@ -48,7 +48,7 @@ npm run dev
 | API | http://localhost:3000 |
 | Health check | http://localhost:3000/health |
 
-First run: create owner password → provision device token → flash firmware → monitor readings.
+First run: choose password or no-password mode → provision device API key if private → flash firmware → monitor readings.
 
 ## Features
 
@@ -75,7 +75,7 @@ flowchart LR
   end
 
   subgraph API[Fastify API]
-    Auth[Device token + owner password]
+    Auth[API key]
     DB[(SQLite WAL)]
     Alarms[Alarm engine]
     OTA[OTA endpoints]
@@ -145,7 +145,7 @@ cd firmware && cp platformio.secrets.ini.example platformio.secrets.ini
 | `WIFI_PASSWORD` | Wi-Fi password |
 | `DEVICE_ID` | Stable device ID |
 | `API_URL` | Telemetry endpoint |
-| `API_KEY` | Token from dashboard/API |
+| `API_KEY` | API key for device auth |
 
 ## API
 
@@ -153,11 +153,11 @@ cd firmware && cp platformio.secrets.ini.example platformio.secrets.ini
 |---|---|---|
 | `/health` | None | Health check |
 | `/api/v1/auth/*` | Session | Owner setup, login |
-| `/api/v1/telemetry` | Device token | Ingest sensor data |
+| `/api/v1/telemetry` | Device API key or public mode | Ingest sensor data |
 | `/api/v1/readings` | Session | Query history |
 | `/api/v1/devices` | Session | Device registry |
 | `/api/v1/alarms` | Session | Alarm workflow |
-| `/api/v1/firmware/*` | Device token | OTA endpoints |
+| `/api/v1/firmware/*` | Device API key | OTA endpoints |
 
 <details>
 <summary>Project structure</summary>
