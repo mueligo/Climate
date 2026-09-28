@@ -21,12 +21,12 @@ flowchart LR
 
 ## Local development
 
-Prerequisites: Node.js 24+, pnpm, PlatformIO for firmware; a native C++ compiler or the documented portable test compiler for firmware host tests.
+Prerequisites: Node.js 24+, npm, PlatformIO for firmware; a native C++ compiler or the documented portable test compiler for firmware host tests.
 
-1. From `webapp/`, install dependencies with `pnpm install` (use `pnpm.cmd` in PowerShell if script execution is restricted).
-2. Run `pnpm --filter api dev` and `pnpm --filter dashboard dev` in separate terminals.
+1. From `webapp/`, install dependencies with `npm install`.
+2. Run `npm run dev:api` and `npm run dev:dashboard` in separate terminals.
 3. Open the dashboard, create the initial administrator password locally, then sign in.
-4. Register a device or use the existing Living Room entry. Device credentials authenticate only device ingestion/configuration, not dashboard access.
+4. Register a device or use the default `esp32-climate-001` device. Device API keys authenticate only device ingestion/configuration, not dashboard access.
 5. Configure the firmware's private settings using `firmware/README.md`. A physical ESP32 must use the computer's LAN address or a reachable domain; its `localhost` is the ESP32 itself. Wokwi needs its supported gateway route.
 6. Build and follow the firmware's explicit flash/migration instructions. Never erase storage to resolve a connection problem.
 
@@ -35,7 +35,7 @@ The API binds to `127.0.0.1` by default. For a physical board on a trusted LAN, 
 ## Credentials and network boundaries
 
 - Initial administrator setup is a one-time local action. Passwords are not stored in the dashboard or included in exported measurements.
-- A device token is shown once when created or rotated. Store it outside source control. Rotation requires updating the corresponding device before it can reconnect.
+- A device API key is shown once when created or generated. Store it outside source control. Rotation requires updating the corresponding device before it can reconnect in private mode.
 - Development compatibility credentials are only for a private local setup. Use explicit strong deployment credentials and HTTPS for production.
 - Configure the exact dashboard origin; do not open wildcard credentialed CORS. Keep API listener private behind a TLS reverse proxy for internet access.
 - Firmware must trust the correct certificate authority for HTTPS. Do not work around a certificate failure by disabling validation.
@@ -62,10 +62,10 @@ The API binds to `127.0.0.1` by default. For a physical board on a trusted LAN, 
 
 ### Online backup and restore check
 
-Run from `webapp/apps/api` using the same `DATABASE_PATH` environment as the running API:
+Run from the repository root using the same `DATABASE_PATH` environment as the running API:
 
 ```sh
-pnpm backup /absolute/path/to/climate-backup.sqlite
+npm --prefix webapp/apps/api run backup -- /absolute/path/to/climate-backup.sqlite
 ```
 
 The command uses SQLite's online backup API and refuses to overwrite an existing destination. Choose a new filename for each backup. To check a restore, start a separate API with `DATABASE_PATH` pointing to a copy of the backup and a different `PORT`; verify the device registry, record count and time range before changing the production service. Keep backups private: they contain measurements and credential hashes. Schedule and retain backups according to the installation's storage and recovery needs.
@@ -97,7 +97,7 @@ See the archived validation report at `.archive/tasks/final-report.md` for the t
 
 ## Continuous verification
 
-`.github/workflows/verify.yml` defines independent webapp and firmware checks for pushes, pull requests and manual runs. The webapp job uses Node24, installs the workspace lockfile, compiles both apps, runs API regressions, an abrupt server restart check and Chromium browser integration. The firmware job compiles LOLIN32 and runs the native tests with PlatformIO6.1.19. Jobs have read-only repository permissions and do not deploy or use private device credentials.
+`.github/workflows/verify.yml` defines independent webapp and firmware checks for pushes, pull requests and manual runs. The webapp job uses Node24, installs the workspace lockfile, compiles both apps, runs API regressions, an abrupt server restart check and Chromium browser integration. The firmware job compiles LOLIN32 and runs the native tests with PlatformIO6.1.19. Jobs have read-only repository permissions and do not deploy or use private device API keys.
 
 After building the API, run `node scripts/system-check.mjs` from the project root for the process-level check. It starts the compiled server on loopback with its own temporary SQLite database, creates a test owner, sends telemetry, kills and restarts the process, then checks persisted sessions/configuration, duplicate acknowledgement, new boot identity, historical replay isolation and CSV. It also sends the actual C++ serializer fixture and checks diagnostic values and replay acknowledgement. It removes only its own temporary fixture; the normal data directory and environment credentials are not used.
 
