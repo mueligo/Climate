@@ -207,17 +207,22 @@ pio run -e lolin32_dht22_alwayson -e lolin32_sht31_alwayson \
 | Firmware matrix | Pass |
 | Wokwi image | Generated |
 
-## Docs
+## Firmware
 
-| File | Description |
-|---|---|
-| [`firmware/FIRMWARE_SETUP.md`](firmware/FIRMWARE_SETUP.md) | Firmware setup |
-| [`firmware/src/README.md`](firmware/src/README.md) | Source layout |
-| [`webapp/README.md`](webapp/README.md) | Web app workflow |
-| [`webapp/apps/api/README.md`](webapp/apps/api/README.md) | API, storage, backup |
-| [`webapp/apps/dashboard/README.md`](webapp/apps/dashboard/README.md) | Dashboard dev + QA |
+Climate ships universal ESP32 firmware (ESP-IDF, PlatformIO) that works with any compatible API backend. It is decoupled from the dashboard: set `API_URL` and `API_KEY` to report, or leave it unconfigured for local flash/QC.
 
-## Scope
+| Capability | Climate | ESPHome | Tasmota |
+|---|---|---|---|
+| Configuration | Single `platformio.secrets.ini` | Per-device YAML file | Web UI commands |
+| Build | Per-sensor-matrix (`dht22`/`sht31`, `alwayson`/`deepsleep`) | Per-device compilation | Shared binary |
+| Local queue | LittleFS, CRC records, replay-safe dedup | RAM queue | Flash queue |
+| Offline safety | Retry uploader, CRC, dedup | Limited retry | Rules + retain |
+| OTA updates | Climate API or standalone HTTPS | ESPHome/HA | Tasmota web/MQTT |
+| Auth model | `API_KEY` BEARER token per device | Native API key | None (MQTT) |
+| Flash usage | 75–78% | ~65% | ~90% |
+| For beginners | ⚠️ Needs API backend | ⚠️ YAML compile | ✅ Web UI install |
+| Standalone use | Needs API | HA preferred | ✅ Self-contained |
+| Flexibility | Medium (matrix) | High (YAML) | High (rules) |
 
 Climate is for small self-hosted deployments: homes, labs, greenhouses, fridges, sensor networks. Not for large-fleet telemetry or enterprise RBAC.
 
