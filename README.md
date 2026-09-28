@@ -223,6 +223,10 @@ Climate ships universal ESP32 firmware (ESP-IDF, PlatformIO) that works with any
 | For beginners | ⚠️ Needs API backend | ⚠️ YAML compile | ✅ Web UI install |
 | Standalone use | Needs API | HA preferred | ✅ Self-contained |
 | Flexibility | Medium (matrix) | High (YAML) | High (rules) |
+| Developer control | ✅ Full source, IDF-native | ⚠️ YAML abstraction | ⚠️ Rule engine only |
+| Community size | Growing (niche) | Large (HA ecosystem) | Large (established) |
+| Update frequency | Per firmware feature | Weekly patches | Monthly |
+| Recovery mode | Safe-mode (ESP-IDF OTA) | Safe-mode fallback | Safe-mode fallback |
 
 Climate is for small self-hosted deployments: homes, labs, greenhouses, fridges, sensor networks. Not for large-fleet telemetry or enterprise RBAC.
 
